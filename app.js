@@ -15,18 +15,17 @@ MainState.prototype = {
     },
 
     create: function(){
+        //initialize the phaser-illuminated object and functions
         this._phaserIlluminated = new PhaserIlluminated(game);
-        this._phaserIlluminated.addLamp({position: new illuminated.Vec2(12, 34)});
-        //this._phaserIlluminated.addDarkMask();
-        this._phaserIlluminated.addLamp({position: new illuminated.Vec2(120, 350)});
+        game.add.illuminated.lamp(250, 250);
     },
 
     update: function(){
-        this._phaserIlluminated.update();
+        
     },
 
     render: function(){
-        this._phaserIlluminated.render();
+        
     }
 }
 
