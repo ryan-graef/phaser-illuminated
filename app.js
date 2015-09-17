@@ -15,6 +15,8 @@ MainState.prototype = {
     },
 
     create: function(){
+        game.world.setBounds(0, 0, 2000, 2000);
+
         //initialize the phaser-illuminated object and functions
         game.plugins.add(Phaser.Plugin.PhaserIlluminated);
 
@@ -46,6 +48,18 @@ MainState.prototype = {
         //myMask.refresh();
         myLamp1.y -= 0.5;
         myLamp2.y += 0.5;
+
+        if(game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
+            game.camera.x += 5;
+        }else if(game.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
+            game.camera.x -= 5;
+        }
+
+        if(game.input.keyboard.isDown(Phaser.Keyboard.UP)){
+            game.camera.y -= 5;
+        }else if(game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
+            game.camera.y += 5;
+        }
     },
 
     render: function(){
