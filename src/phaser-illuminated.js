@@ -33,9 +33,13 @@ Phaser.Plugin.PhaserIlluminated.prototype._construct = function(){
 }
 
 Phaser.Plugin.PhaserIlluminated.prototype._createLamp = function(x, y, config){
+    if(!config){
+        config = {};
+    }
+
     //distance is the actual distance the light travels
     var distance;
-    if(!config || !config.distance){
+    if(!config.distance){
         distance = 200;
     }else{
         distance = config.distance;
@@ -49,9 +53,13 @@ Phaser.Plugin.PhaserIlluminated.prototype._createLamp = function(x, y, config){
         y = 0;
     }
 
+    config.distance = distance;
+    config.position = new illuminated.Vec2(distance, distance);
+
+
     var bmd = game.add.bitmapData(distance*2, distance*2);
     game.cache.addBitmapData('illuminated-lamp-'+this._illuminatedSprites.length, bmd);
-    var lamp = new illuminated.Lamp({position: new illuminated.Vec2(distance, distance), distance: distance});
+    var lamp = new illuminated.Lamp(config);
     lamp.offset = {};
     var sprite = game.add.sprite(x, y, bmd);
     sprite.bmdIndex = 'illuminated-lamp-'+this._illuminatedSprites.length;
