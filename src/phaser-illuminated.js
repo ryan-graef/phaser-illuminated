@@ -32,8 +32,13 @@ PhaserIlluminated.prototype = {
     _createLamp: function(x, y, config){
         //distance is the actual distance the light travels
         var distance;
-        if(!config || !config.distance){
-            distance = 200;
+        if(!config){
+            config = {};
+        }
+
+        if(!config.distance){
+            distance = 400;
+            config.distance = distance;
         }else{
             distance = config.distance;
         }
@@ -46,9 +51,12 @@ PhaserIlluminated.prototype = {
             y = 0;
         }
 
+        //override the position because this is realtive to the sprite's position
+        config.position = new illuminated.Vec2(distance, distance);
+
         var bmd = game.add.bitmapData(distance*2, distance*2);
         game.cache.addBitmapData('illuminated-lamp-'+this._illuminatedSprites.length, bmd);
-        var lamp = new illuminated.Lamp({position: new illuminated.Vec2(distance, distance), distance: distance});
+        var lamp = new illuminated.Lamp(config);
         lamp.offset = {};
         var sprite = game.add.sprite(x, y, bmd);
         sprite.bmdIndex = 'illuminated-lamp-'+this._illuminatedSprites.length;
@@ -62,15 +70,23 @@ PhaserIlluminated.prototype = {
             if(this.lighting){
                 //render solid objects relative to position of sprites
                 this.lighting.objects.forEach(function(o){
-                    o.topleft.x = o.originalX - this.x;
-                    o.topleft.y = o.originalY - this.y;
-                    o.bottomright.x = o.originalX + o.originalW - this.x;
-                    o.bottomright.y = o.originalY + o.originalH - this.y
+                    o.topleft.x = o.originalX - this.lamp.offset.x;
+                    o.topleft.y = o.originalY - this.lamp.offset.y;
+                    o.bottomright.x = o.originalX + o.originalW - this.lamp.offset.x;
+                    o.bottomright.y = o.originalY + o.originalH - this.lamp.offset.y
                     o.syncFromTopleftBottomright();
                 }, this);
 
                 this.lighting.compute(this.bmd.width, this.bmd.height);
                 this.lighting.render(this.bmd.ctx);
+
+                this.lighting.objects.forEach(function(o){
+                    o.topleft.x = o.originalX;
+                    o.topleft.y = o.originalY;
+                    o.bottomright.x = o.originalX + o.originalW;
+                    o.bottomright.y = o.originalY + o.originalH;
+                    o.syncFromTopleftBottomright();
+                }, this);
             }else{
                 this.lamp.render(this.bmd.ctx);
             }
