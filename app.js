@@ -1,4 +1,4 @@
-var WIDTH = 960;
+var WIDTH = 640;
 var HEIGHT = 640;
 var game;
 
@@ -19,7 +19,7 @@ MainState.prototype = {
         game.plugins.add(Phaser.Plugin.PhaserIlluminated);
 
         myBackgroundBmd = game.add.bitmapData(game.width, game.height);
-        myBackgroundBmd.ctx.fillStyle = "#000000";
+        myBackgroundBmd.ctx.fillStyle = "#333333";
         myBackgroundBmd.ctx.fillRect(0, 0, game.width, game.height);
         game.cache.addBitmapData('background', myBackgroundBmd);
         myBackgroundSprite = game.add.sprite(0, 0, myBackgroundBmd);
@@ -32,8 +32,10 @@ MainState.prototype = {
         //myMask.bringToTop();
         //myMask.addLampSprite(myLamp2);
 
-        myObj = game.add.illuminated.rectangleObject(120, 120, 40, 30);
-        myObjs = [myObj];
+        myObj = game.add.illuminated.discObject(80, 80, 40);
+        myObj2 = game.add.illuminated.rectangleObject(250, 160, 40, 40);
+        myObj3 = game.add.illuminated.rectangleObject (80, 180, 40, 40);
+        myObjs = [myObj, myObj2, myObj3];
         myLamp2.createLighting(myObjs);
         myLamp1.createLighting(myObjs);
     },

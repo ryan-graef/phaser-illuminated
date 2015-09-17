@@ -14,6 +14,7 @@ Phaser.Plugin.PhaserIlluminated.prototype._construct = function(){
 
     //these guys function as their regular illuminated.js counterparts
     this._game.add.illuminated.rectangleObject = this._createRectangleObject;
+    this._game.add.illuminated.discObject = this._createDiscObject;
 
     //this is a bit hacky but the add calls are from the scope of the illuminated object, so we put needed
     //variables here
@@ -62,11 +63,16 @@ Phaser.Plugin.PhaserIlluminated.prototype._createLamp = function(x, y, config){
         if(this.lighting){
             //render solid objects relative to position of sprites
             this.lighting.objects.forEach(function(o){
-                o.topleft.x = o.originalX - this.x;
-                o.topleft.y = o.originalY - this.y;
-                o.bottomright.x = o.originalX + o.originalW - this.x;
-                o.bottomright.y = o.originalY + o.originalH - this.y
-                o.syncFromTopleftBottomright();
+                if(o.topleft && o.bottomright){ //rect obj
+                    o.topleft.x = o.originalX - this.x;
+                    o.topleft.y = o.originalY - this.y;
+                    o.bottomright.x = o.originalX + o.originalW - this.x;
+                    o.bottomright.y = o.originalY + o.originalH - this.y
+                    o.syncFromTopleftBottomright();
+                }else if(o.radius){ //disc obj
+                    o.center.x = o.originalX - this.x;
+                    o.center.y = o.originalY - this.y;
+                }
             }, this);
 
             this.lighting.compute(this.bmd.width, this.bmd.height);
@@ -148,6 +154,14 @@ Phaser.Plugin.PhaserIlluminated.prototype._createRectangleObject = function(x, y
     obj.originalY = y;
     obj.originalW = w;
     obj.originalH = h;
+
+    return obj;
+}
+
+Phaser.Plugin.PhaserIlluminated.prototype._createDiscObject = function(centerX, centerY, radius){
+    var obj = new illuminated.DiscObject({position: new illuminated.Vec2(centerX, centerY), radius: radius});
+    obj.originalX = centerX;
+    obj.originalY = centerY;
 
     return obj;
 }
