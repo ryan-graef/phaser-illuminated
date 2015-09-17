@@ -3,7 +3,8 @@ A Javascript library for interfacing Phaser.js and Illuminated.js for light effe
 
 This is how you use the library.
 
-[code=js:0]//defined global game object (the phaser game instance)
+```
+//defined global game object (the phaser game instance)
 game;
 
 create: function(){
@@ -46,6 +47,7 @@ update: function(){
 render: function(){
 
 }
-[/code]
+```
+
 
 For additional information, check out app.js.  If you want to run it on your local machine, you'll need to get a copy of Phaser.js and illuminated.js from their respective repos.
