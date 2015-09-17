@@ -34,10 +34,10 @@ MainState.prototype = {
         //myMask.bringToTop();
         //myMask.addLampSprite(myLamp2);
 
-        myObj = game.add.illuminated.discObject(80, 80, 40);
-        myObj2 = game.add.illuminated.rectangleObject(250, 160, 40, 40);
-        myObj3 = game.add.illuminated.rectangleObject (80, 180, 40, 40);
-        myObjs = [myObj, myObj2, myObj3];
+        myObj = game.add.illuminated.lineObject(10, 400, 300, 400);
+       // myObj2 = game.add.illuminated.rectangleObject(250, 160, 40, 40);
+        //myObj3 = game.add.illuminated.rectangleObject (80, 180, 40, 40);
+        myObjs = [myObj];
         myLamp2.createLighting(myObjs);
         myLamp1.createLighting(myObjs);
     },

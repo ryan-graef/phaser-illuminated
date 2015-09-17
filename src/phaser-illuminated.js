@@ -15,6 +15,7 @@ Phaser.Plugin.PhaserIlluminated.prototype._construct = function(){
     //these guys function as their regular illuminated.js counterparts
     this._game.add.illuminated.rectangleObject = this._createRectangleObject;
     this._game.add.illuminated.discObject = this._createDiscObject;
+    this._game.add.illuminated.lineObject = this._createLineObject;
 
     //this is a bit hacky but the add calls are from the scope of the illuminated object, so we put needed
     //variables here
@@ -72,6 +73,11 @@ Phaser.Plugin.PhaserIlluminated.prototype._createLamp = function(x, y, config){
                 }else if(o.radius){ //disc obj
                     o.center.x = o.originalX - this.x;
                     o.center.y = o.originalY - this.y;
+                }else if(o.a && o.b){ //line obj
+                    o.a.x = o.originalStartX - this.x;
+                    o.a.y = o.originalStartY - this.y;
+                    o.b.x = o.originalEndX - this.x;
+                    o.b.y = o.originalEndY - this.y;
                 }
             }, this);
 
@@ -162,6 +168,16 @@ Phaser.Plugin.PhaserIlluminated.prototype._createDiscObject = function(centerX, 
     var obj = new illuminated.DiscObject({position: new illuminated.Vec2(centerX, centerY), radius: radius});
     obj.originalX = centerX;
     obj.originalY = centerY;
+
+    return obj;
+}
+
+Phaser.Plugin.PhaserIlluminated.prototype._createLineObject = function(startX, startY, endX, endY){
+    var obj = new illuminated.LineObject(new illuminated.Vec2(startX, startY), new illuminated.Vec2(startX, startY));
+    obj.originalStartX = startX;
+    obj.originalStartY = startY;
+    obj.originalEndX = endX;
+    obj.originalEndY = endY;
 
     return obj;
 }
