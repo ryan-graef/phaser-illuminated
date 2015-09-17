@@ -16,7 +16,7 @@ MainState.prototype = {
 
     create: function(){
         //initialize the phaser-illuminated object and functions
-        this._phaserIlluminated = new PhaserIlluminated(game);
+        game.plugins.add(Phaser.Plugin.PhaserIlluminated);
 
         myBackgroundBmd = game.add.bitmapData(game.width, game.height);
         myBackgroundBmd.ctx.fillStyle = "#000000";
