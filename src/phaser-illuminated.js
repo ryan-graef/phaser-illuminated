@@ -16,6 +16,7 @@ Phaser.Plugin.PhaserIlluminated.prototype._construct = function(){
     this._game.add.illuminated.rectangleObject = this._createRectangleObject;
     this._game.add.illuminated.discObject = this._createDiscObject;
     this._game.add.illuminated.lineObject = this._createLineObject;
+    this._game.add.illuminated.polygonObject = this._createPolygonObject;
 
     //this is a bit hacky but the add calls are from the scope of the illuminated object, so we put needed
     //variables here
@@ -78,6 +79,11 @@ Phaser.Plugin.PhaserIlluminated.prototype._createLamp = function(x, y, config){
                     o.a.y = o.originalStartY - this.y;
                     o.b.x = o.originalEndX - this.x;
                     o.b.y = o.originalEndY - this.y;
+                }else if(o.points){ //polygon
+                    o.points.forEach(function(point, index){
+                        point.x = o.originalData[index].x - this.x;
+                        point.y = o.originalData[index].y - this.y;
+                    }, this);
                 }
             }, this);
 
@@ -178,6 +184,20 @@ Phaser.Plugin.PhaserIlluminated.prototype._createLineObject = function(startX, s
     obj.originalStartY = startY;
     obj.originalEndX = endX;
     obj.originalEndY = endY;
+
+    return obj;
+}
+
+//data in the form [{x: x, y: y},{x: x, y: y}, ...]
+Phaser.Plugin.PhaserIlluminated.prototype._createPolygonObject = function(data){
+    var vec2Data = [];
+    data.forEach(function(point){
+        vec2Data.push(new illuminated.Vec2(point.x, point.y));
+    }, this);
+
+
+    var obj = new illuminated.PolygonObject({points: vec2Data});
+    obj.originalData = data;
 
     return obj;
 }
