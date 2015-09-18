@@ -65,6 +65,7 @@ Phaser.Plugin.PhaserIlluminated.prototype._createLamp = function(x, y, config){
     sprite.bmdIndex = 'illuminated-lamp-'+this._illuminatedSprites.length;
     sprite.bmd = bmd;
     sprite.lamp = lamp;
+    sprite.anchor.setTo(0.5, 0.5);
 
     //update the bmd and update the position of the lamp for masking and lighting purposes
     sprite.refresh = function(){
@@ -74,23 +75,23 @@ Phaser.Plugin.PhaserIlluminated.prototype._createLamp = function(x, y, config){
             //render solid objects relative to position of sprites
             this.lighting.objects.forEach(function(o){
                 if(o.topleft && o.bottomright){ //rect obj
-                    o.topleft.x = o.originalX - this.x;
-                    o.topleft.y = o.originalY - this.y;
-                    o.bottomright.x = o.originalX + o.originalW - this.x;
-                    o.bottomright.y = o.originalY + o.originalH - this.y
+                    o.topleft.x = o.originalX - this.x + this.lamp.distance;
+                    o.topleft.y = o.originalY - this.y + this.lamp.distance;
+                    o.bottomright.x = o.originalX + o.originalW - this.x + this.lamp.distance;
+                    o.bottomright.y = o.originalY + o.originalH - this.y + this.lamp.distance;
                     o.syncFromTopleftBottomright();
                 }else if(o.radius){ //disc obj
-                    o.center.x = o.originalX - this.x;
-                    o.center.y = o.originalY - this.y;
+                    o.center.x = o.originalX - this.x + this.lamp.distance;
+                    o.center.y = o.originalY - this.y + this.lamp.distance;
                 }else if(o.a && o.b){ //line obj
-                    o.a.x = o.originalStartX - this.x;
-                    o.a.y = o.originalStartY - this.y;
-                    o.b.x = o.originalEndX - this.x;
-                    o.b.y = o.originalEndY - this.y;
+                    o.a.x = o.originalStartX - this.x + this.lamp.distance;
+                    o.a.y = o.originalStartY - this.y + this.lamp.distance;
+                    o.b.x = o.originalEndX - this.x + this.lamp.distance;
+                    o.b.y = o.originalEndY - this.y + this.lamp.distance;
                 }else if(o.points){ //polygon
                     o.points.forEach(function(point, index){
-                        point.x = o.originalData[index].x - this.x;
-                        point.y = o.originalData[index].y - this.y;
+                        point.x = o.originalData[index].x - this.x + this.lamp.distance;
+                        point.y = o.originalData[index].y - this.y + this.lamp.distance;
                     }, this);
                 }
             }, this);
@@ -143,18 +144,35 @@ Phaser.Plugin.PhaserIlluminated.prototype._createDarkMask = function(illuminated
 
     var bmd = game.add.bitmapData(this._game.width, this._game.height);
     game.cache.addBitmapData('illuminated-darkmask', bmd);
-    var darkMask = new illuminated.DarkMask({lights: lamps, color: color ? color : 'rgba(0,0,0,0.8'});
+    var darkMask = new illuminated.DarkMask({lights: lamps, color: color ? color : 'rgba(0,0,0,0.6'});
     darkMask.compute(this._game.width, this._game.height);
     darkMask.render(bmd.ctx);
     var sprite = game.add.sprite(0, 0, bmd);
     sprite.darkMask = darkMask;
     sprite.bmdIndex = 'illuminated-darkmask';
     sprite.bmd = bmd;
+    sprite._game = game;
     sprite.refresh = function(){
+        this.darkMask.lights.forEach(function(light){
+            light.oldX = light.position.x;
+            light.oldY = light.position.y;
+
+            light.position.x = light.oldX - light.distance - this._game.camera.x;
+            light.position.y = light.oldY - light.distance - this._game.camera.y;
+        }, this);
+
         this.bmd.ctx.clearRect(0, 0, this.bmd.width, this.bmd.height);
         this.darkMask.compute(this.bmd.width, this.bmd.height);
         this.darkMask.render(bmd.ctx);
         this.bmd.dirty = true;
+
+        this.x = this._game.camera.x;
+        this.y = this._game.camera.y;
+
+        this.darkMask.lights.forEach(function(light){
+            light.position.x = light.oldX;
+            light.position.y = light.oldY;
+        }, this);
     }
     sprite.getMask = function(){
         return this.darkMask;
@@ -208,4 +226,28 @@ Phaser.Plugin.PhaserIlluminated.prototype._createPolygonObject = function(data){
     obj.originalData = data;
 
     return obj;
+}
+
+Phaser.Plugin.PhaserIlluminated.prototype.createOpaqueObjectsFromSolidTiles = function(tileMapLayer){
+    if(!tileMapLayer){
+        return [];
+    }
+
+    var opaqueObjects = []; 
+
+    for(var r = 0; r < tileMapLayer.layer.data.length; r++){
+        var row = tileMapLayer.layer.data[r];
+
+        for(var c = 0; c < row.length; c++){
+            var tile = row[c];
+
+            if(tile.canCollide){
+                opaqueObjects.push(this._createRectangleObject(tile.x*tile.width, tile.y*tile.height, tile.width, tile.height));
+            }
+
+        }
+    }
+    
+
+    return opaqueObjects;
 }
