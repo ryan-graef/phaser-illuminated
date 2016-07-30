@@ -56,12 +56,11 @@ Phaser.Plugin.PhaserIlluminated.prototype._createLamp = function(x, y, config){
     config.distance = distance;
     config.position = new illuminated.Vec2(distance, distance);
 
-
-    var bmd = game.add.bitmapData(distance*2, distance*2);
-    game.cache.addBitmapData('illuminated-lamp-'+this._illuminatedSprites.length, bmd);
+    var bmd =this._game.add.bitmapData(distance*2, distance*2);
+    this._game.cache.addBitmapData('illuminated-lamp-'+this._illuminatedSprites.length, bmd);
     var lamp = new illuminated.Lamp(config);
     lamp.offset = {};
-    var sprite = game.add.sprite(x, y, bmd);
+    var sprite =this._game.add.sprite(x, y, bmd);
     sprite.bmdIndex = 'illuminated-lamp-'+this._illuminatedSprites.length;
     sprite.bmd = bmd;
     sprite.lamp = lamp;
@@ -142,16 +141,16 @@ Phaser.Plugin.PhaserIlluminated.prototype._createDarkMask = function(illuminated
         lamps.push(e.lamp);
     }, this);
 
-    var bmd = game.add.bitmapData(this._game.width, this._game.height);
-    game.cache.addBitmapData('illuminated-darkmask', bmd);
+    var bmd =this._game.add.bitmapData(this._game.width, this._game.height);
+    this._game.cache.addBitmapData('illuminated-darkmask', bmd);
     var darkMask = new illuminated.DarkMask({lights: lamps, color: color ? color : 'rgba(0,0,0,0.6'});
     darkMask.compute(this._game.width, this._game.height);
     darkMask.render(bmd.ctx);
-    var sprite = game.add.sprite(0, 0, bmd);
+    var sprite =this._game.add.sprite(0, 0, bmd);
     sprite.darkMask = darkMask;
     sprite.bmdIndex = 'illuminated-darkmask';
     sprite.bmd = bmd;
-    sprite._game = game;
+    sprite._game =this._game;
     sprite.refresh = function(){
         this.darkMask.lights.forEach(function(light){
             light.oldX = light.position.x;
